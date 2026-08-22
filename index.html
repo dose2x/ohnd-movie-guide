@@ -88,23 +88,8 @@
     font-size: 0.95rem;
   }
   button:hover { filter: brightness(1.15); }
-  button.secondary {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--muted);
-  }
 
-  .settings-link {
-    display: block;
-    text-align: right;
-    color: var(--muted);
-    font-size: 0.8rem;
-    margin-bottom: 20px;
-    cursor: pointer;
-    text-decoration: underline;
-  }
-
-  #status { color: var(--muted); font-size: 0.9rem; margin: 12px 0; min-height: 1.2em; }
+  #status { color: var(--muted); font-size: 0.9rem; margin: 20px 0 12px; min-height: 1.2em; }
   #status.error { color: var(--rotten); }
 
   .card {
@@ -157,30 +142,6 @@
     .card { grid-template-columns: 1fr; }
     .card img.poster { width: 100%; max-width: 200px; margin: 0 auto; }
   }
-
-  .modal-backdrop {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.6);
-    align-items: center;
-    justify-content: center;
-    z-index: 10;
-  }
-  .modal-backdrop.visible { display: flex; }
-  .modal {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 24px;
-    width: 90%;
-    max-width: 420px;
-  }
-  .modal h3 { margin-top: 0; }
-  .modal p { color: var(--muted); font-size: 0.85rem; line-height: 1.4; }
-  .modal input { width: 100%; margin: 12px 0; }
-  .modal a { color: var(--accent); }
-  .modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
 </style>
 </head>
 <body>
@@ -196,8 +157,6 @@
     <input type="text" id="query" placeholder="Search a movie title (e.g. The Matrix)" autocomplete="off">
     <button id="searchBtn">Search</button>
   </div>
-  <span class="settings-link" id="settingsLink">API key settings</span>
-
   <div id="status"></div>
 
   <div class="card" id="card">
@@ -222,20 +181,8 @@
   </div>
 </div>
 
-<div class="modal-backdrop" id="modalBackdrop">
-  <div class="modal">
-    <h3>OMDb API Key</h3>
-    <p>Get a free key at <a href="https://www.omdbapi.com/apikey.aspx" target="_blank" rel="noopener">omdbapi.com/apikey.aspx</a> (check your email after signing up). It's stored only in this browser's local storage — never sent anywhere except OMDb.</p>
-    <input type="text" id="apiKeyInput" placeholder="Paste your OMDb API key">
-    <div class="modal-actions">
-      <button class="secondary" id="modalCancel">Cancel</button>
-      <button id="modalSave">Save</button>
-    </div>
-  </div>
-</div>
-
 <script>
-const STORAGE_KEY = "ohnd_omdb_api_key";
+const PROXY_URL = "https://ohnd-movie-proxy.ohndtomatometer.workers.dev";
 
 const els = {
   query: document.getElementById("query"),
@@ -249,37 +196,7 @@ const els = {
   plot: document.getElementById("plot"),
   actors: document.getElementById("actors"),
   director: document.getElementById("director"),
-  settingsLink: document.getElementById("settingsLink"),
-  modalBackdrop: document.getElementById("modalBackdrop"),
-  apiKeyInput: document.getElementById("apiKeyInput"),
-  modalSave: document.getElementById("modalSave"),
-  modalCancel: document.getElementById("modalCancel"),
 };
-
-function getApiKey() {
-  return localStorage.getItem(STORAGE_KEY) || "";
-}
-
-function openModal(prefill) {
-  els.apiKeyInput.value = prefill || getApiKey();
-  els.modalBackdrop.classList.add("visible");
-  els.apiKeyInput.focus();
-}
-
-function closeModal() {
-  els.modalBackdrop.classList.remove("visible");
-}
-
-els.settingsLink.addEventListener("click", () => openModal());
-els.modalCancel.addEventListener("click", closeModal);
-els.modalBackdrop.addEventListener("click", (e) => {
-  if (e.target === els.modalBackdrop) closeModal();
-});
-els.modalSave.addEventListener("click", () => {
-  const key = els.apiKeyInput.value.trim();
-  if (key) localStorage.setItem(STORAGE_KEY, key);
-  closeModal();
-});
 
 function setStatus(msg, isError) {
   els.status.textContent = msg || "";
@@ -298,18 +215,11 @@ async function searchMovie() {
     setStatus("Type a movie title first.", true);
     return;
   }
-  const apiKey = getApiKey();
-  if (!apiKey) {
-    setStatus("Add your OMDb API key first (see settings link above).", true);
-    openModal();
-    return;
-  }
-
   els.card.classList.remove("visible");
   setStatus("Searching...");
 
   try {
-    const url = `https://www.omdbapi.com/?apikey=${encodeURIComponent(apiKey)}&t=${encodeURIComponent(title)}&plot=full`;
+    const url = `${PROXY_URL}/?t=${encodeURIComponent(title)}`;
     const res = await fetch(url);
     const data = await res.json();
 
@@ -345,7 +255,7 @@ async function searchMovie() {
 
     els.card.classList.add("visible");
   } catch (err) {
-    setStatus("Something went wrong reaching OMDb. Check your connection and try again.", true);
+    setStatus("Something went wrong. Check your connection and try again.", true);
   }
 }
 
@@ -354,10 +264,6 @@ els.query.addEventListener("keydown", (e) => {
   if (e.key === "Enter") searchMovie();
 });
 
-if (!getApiKey()) {
-  setStatus("Welcome! Add your free OMDb API key to get started.");
-  openModal();
-}
 </script>
 
 </body>
