@@ -4,178 +4,326 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The OHND Movie Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #100a1c;
-    --card: #1c1330;
-    --text: #f1edf8;
-    --muted: #a396c2;
-    --accent: #a855f7;
-    --accent2: #7c3aed;
-    --fresh: #34d399;
-    --rotten: #f43f5e;
-    --border: #35275a;
+    --asphalt: #16151a;
+    --asphalt-2: #1e1c24;
+    --paper: #f2ede0;
+    --paper-dim: #e6dfcd;
+    --ink: #1b1a1f;
+    --ink-soft: #57544f;
+    --flag-red: #c1352b;
+    --flag-red-dark: #8f2620;
+    --flag-green: #3f8a52;
+    --flag-green-dark: #2c6339;
+    --pit-yellow: #dba640;
+    --line-dark: rgba(242, 237, 224, 0.14);
+    --line-paper: #cabfa1;
   }
   * { box-sizing: border-box; }
-  body {
+  html, body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background:
-      radial-gradient(ellipse 900px 500px at 50% -10%, rgba(168, 85, 247, 0.25), transparent),
-      var(--bg);
-    color: var(--text);
+    background: var(--asphalt);
+  }
+  body {
+    font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--paper);
     min-height: 100vh;
   }
+  h1, h2, h3, .display {
+    font-family: "Oswald", "IBM Plex Sans", sans-serif;
+    text-transform: uppercase;
+  }
+
+  .checker {
+    height: 14px;
+    background-image:
+      linear-gradient(45deg, var(--paper) 25%, transparent 25%, transparent 75%, var(--paper) 75%),
+      linear-gradient(45deg, var(--paper) 25%, transparent 25%, transparent 75%, var(--paper) 75%);
+    background-size: 14px 14px;
+    background-position: 0 0, 7px 7px;
+    background-color: var(--ink);
+  }
+
   header {
-    padding: 28px 20px 16px;
+    padding: 34px 20px 26px;
     text-align: center;
-    border-bottom: 1px solid var(--border);
   }
-  header .logo {
-    width: 100px;
-    height: 100px;
+  .badge-logo {
+    width: 88px;
+    height: 88px;
     object-fit: cover;
-    object-position: center;
-    margin: 0 auto 12px;
-    display: block;
     border-radius: 50%;
-    border: 3px solid var(--accent);
-    box-shadow: 0 0 22px rgba(168, 85, 247, 0.65), 0 0 0 6px rgba(168, 85, 247, 0.12);
+    border: 3px solid var(--paper);
+    background: var(--paper);
+    display: block;
+    margin: 0 auto 14px;
   }
-  header .logo.hidden { display: none; }
+  .badge-logo.hidden { display: none; }
   header h1 {
-    margin: 0 0 4px;
-    font-size: 1.9rem;
-    letter-spacing: -0.5px;
+    margin: 0;
+    font-size: 2.1rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    line-height: 1.05;
   }
-  header h1 span {
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+  header h1 .small-word {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 6px;
+    color: var(--flag-red);
+    margin-bottom: 6px;
   }
-  header p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+  header p.tagline {
+    margin: 12px 0 0;
+    color: #b7b2a5;
+    font-size: 0.92rem;
+    max-width: 380px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.5;
+  }
 
   .container {
-    max-width: 760px;
+    max-width: 640px;
     margin: 0 auto;
-    padding: 24px 20px 60px;
+    padding: 30px 20px 70px;
+  }
+
+  .pit-label {
+    font-family: "Oswald", sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #8f8a7c;
+    margin: 0 0 8px;
   }
 
   .search-row {
     display: flex;
     gap: 8px;
-    margin-bottom: 8px;
   }
   input[type="text"] {
     flex: 1;
-    padding: 12px 14px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: var(--card);
-    color: var(--text);
+    padding: 13px 14px;
+    border-radius: 3px;
+    border: 1px solid #3a3742;
+    background: var(--asphalt-2);
+    color: var(--paper);
     font-size: 1rem;
+    font-family: "IBM Plex Sans", sans-serif;
   }
-  input[type="text"]:focus { outline: 2px solid var(--accent); }
-  button {
-    padding: 12px 18px;
-    border-radius: 8px;
+  input[type="text"]::placeholder { color: #726d63; }
+  input[type="text"]:focus {
+    outline: none;
+    border-color: var(--flag-red);
+  }
+  button#searchBtn {
+    padding: 0 22px;
+    border-radius: 3px;
     border: none;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    color: white;
+    background: var(--flag-red);
+    color: var(--paper);
+    font-family: "Oswald", sans-serif;
     font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-size: 0.85rem;
     cursor: pointer;
-    font-size: 0.95rem;
   }
-  button:hover { filter: brightness(1.15); }
+  button#searchBtn:hover { background: var(--flag-red-dark); }
+  button#searchBtn:active { transform: translateY(1px); }
 
-  #status { color: var(--muted); font-size: 0.9rem; margin: 20px 0 12px; min-height: 1.2em; }
-  #status.error { color: var(--rotten); }
+  #status {
+    color: #8f8a7c;
+    font-size: 0.88rem;
+    margin: 14px 0 0;
+    min-height: 1.2em;
+    padding-left: 12px;
+    border-left: 3px solid #3a3742;
+  }
+  #status.error {
+    color: #e8a5a0;
+    border-left-color: var(--flag-red);
+  }
 
-  .card {
+  .sheet {
     display: none;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 24px;
-    margin-top: 16px;
+    background: var(--paper);
+    color: var(--ink);
+    border-radius: 2px;
+    margin-top: 28px;
+    position: relative;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  }
+  .sheet.visible { display: block; animation: drop 0.35s ease-out; }
+  @keyframes drop {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .sheet-inner {
+    padding: 26px 24px 24px;
+    display: grid;
+    grid-template-columns: 128px 1fr;
     gap: 20px;
-    grid-template-columns: 140px 1fr;
-    box-shadow: 0 8px 30px rgba(124, 58, 237, 0.15);
   }
-  .card.visible { display: grid; }
-  .card img.poster {
-    width: 140px;
-    border-radius: 8px;
-    background: #000;
-    align-self: start;
-  }
-  .card .info h2 { margin: 0 0 2px; font-size: 1.4rem; }
-  .card .info .meta { color: var(--muted); font-size: 0.85rem; margin-bottom: 12px; }
 
-  .scores { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
-  .score-pill {
+  .poster-wrap {
+    position: relative;
+    transform: rotate(-2deg);
+  }
+  .poster-wrap img.poster {
+    width: 100%;
+    display: block;
+    border-radius: 2px;
+    background: #000;
+    border: 1px solid var(--line-paper);
+  }
+  .poster-wrap::after {
+    content: "";
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    width: 34px;
+    height: 14px;
+    background: rgba(219, 166, 64, 0.55);
+    transform: translateX(-50%) rotate(3deg);
+  }
+
+  .info h2 {
+    margin: 0 0 2px;
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.1;
+  }
+  .info .meta {
+    color: var(--ink-soft);
+    font-size: 0.85rem;
+    margin-bottom: 14px;
+    font-weight: 500;
+  }
+
+  .flag-label {
+    font-family: "Oswald", sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 0 0 8px;
+  }
+  .flags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .flag-chip {
     display: flex;
     align-items: center;
-    gap: 6px;
-    background: #150e26;
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    padding: 6px 12px;
-    font-size: 0.85rem;
+    gap: 7px;
+    background: #fffdf8;
+    border: 1px solid var(--line-paper);
+    border-radius: 3px;
+    padding: 6px 10px 6px 8px;
+    font-size: 0.82rem;
   }
-  .score-pill .val { font-weight: 700; }
-  .score-pill.rt .val.fresh { color: var(--fresh); }
-  .score-pill.rt .val.rotten { color: var(--rotten); }
+  .flag-chip .swatch {
+    width: 11px;
+    height: 11px;
+    border-radius: 1px;
+    flex-shrink: 0;
+  }
+  .flag-chip.fresh .swatch { background: var(--flag-green); }
+  .flag-chip.rotten .swatch { background: var(--flag-red); }
+  .flag-chip.neutral .swatch {
+    background-image:
+      linear-gradient(45deg, #1b1a1f 25%, transparent 25%, transparent 75%, #1b1a1f 75%),
+      linear-gradient(45deg, #1b1a1f 25%, transparent 25%, transparent 75%, #1b1a1f 75%);
+    background-size: 6px 6px;
+    background-position: 0 0, 3px 3px;
+    background-color: #fff;
+  }
+  .flag-chip .src { color: var(--ink-soft); }
+  .flag-chip .val { font-weight: 600; }
+  .flag-chip.fresh .val { color: var(--flag-green-dark); }
+  .flag-chip.rotten .val { color: var(--flag-red-dark); }
 
-  .section { margin-bottom: 14px; }
-  .section h3 {
+  .divider {
+    height: 1px;
+    background: var(--line-paper);
+    margin: 4px 24px 0;
+  }
+  .fields {
+    padding: 18px 24px 24px;
+    display: grid;
+    gap: 16px;
+  }
+  .field h3 {
     margin: 0 0 4px;
-    font-size: 0.78rem;
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-    color: var(--muted);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    color: var(--ink-soft);
   }
-  .section p { margin: 0; line-height: 1.5; font-size: 0.95rem; }
+  .field p {
+    margin: 0;
+    line-height: 1.55;
+    font-size: 0.95rem;
+  }
 
-  @media (max-width: 480px) {
-    .card { grid-template-columns: 1fr; }
-    .card img.poster { width: 100%; max-width: 200px; margin: 0 auto; }
+  @media (max-width: 460px) {
+    .sheet-inner { grid-template-columns: 1fr; }
+    .poster-wrap { width: 130px; margin: 0 auto; transform: rotate(-1.5deg); }
+    header h1 { font-size: 1.7rem; }
   }
 </style>
 </head>
 <body>
 
+<div class="checker"></div>
+
 <header>
-  <img class="logo" id="logo" src="logo.jpg" alt="OHND logo" onerror="this.classList.add('hidden')">
-  <h1>The <span>OHND</span> Movie Guide</h1>
-  <p>Rotten Tomatoes score, synopsis &amp; cast in one search</p>
+  <img class="badge-logo" id="logo" src="logo.jpg" alt="OHND logo" onerror="this.classList.add('hidden')">
+  <h1><span class="small-word">Our House No Drama presents</span>The Movie Guide</h1>
+  <p class="tagline">Pull the sheet on any title before movie night â flag status, synopsis and who's driving.</p>
 </header>
 
+<div class="checker"></div>
+
 <div class="container">
+  <p class="pit-label">Pull a sheet</p>
   <div class="search-row">
-    <input type="text" id="query" placeholder="Search a movie title (e.g. The Matrix)" autocomplete="off">
+    <input type="text" id="query" placeholder="Type a title, e.g. The Matrix" autocomplete="off">
     <button id="searchBtn">Search</button>
   </div>
   <div id="status"></div>
 
-  <div class="card" id="card">
-    <img class="poster" id="poster" src="" alt="Poster">
-    <div class="info">
-      <h2 id="title"></h2>
-      <div class="meta" id="meta"></div>
-      <div class="scores" id="scores"></div>
-      <div class="section">
+  <div class="sheet" id="card">
+    <div class="sheet-inner">
+      <div class="poster-wrap">
+        <img class="poster" id="poster" src="" alt="Poster">
+      </div>
+      <div class="info">
+        <h2 id="title"></h2>
+        <div class="meta" id="meta"></div>
+        <p class="flag-label">Flag check</p>
+        <div class="flags" id="scores"></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="fields">
+      <div class="field">
         <h3>Synopsis</h3>
         <p id="plot"></p>
       </div>
-      <div class="section">
-        <h3>Actors</h3>
-        <p id="actors"></p>
-      </div>
-      <div class="section">
+      <div class="field">
         <h3>Director</h3>
         <p id="director"></p>
+      </div>
+      <div class="field">
+        <h3>Cast</h3>
+        <p id="actors"></p>
       </div>
     </div>
   </div>
@@ -209,14 +357,20 @@ function ratingClass(value) {
   return num >= 60 ? "fresh" : "rotten";
 }
 
+function flagLabel(source, cls) {
+  if (cls === "fresh") return "Green flag";
+  if (cls === "rotten") return "Red flag";
+  return source;
+}
+
 async function searchMovie() {
   const title = els.query.value.trim();
   if (!title) {
-    setStatus("Type a movie title first.", true);
+    setStatus("Type a title first.", true);
     return;
   }
   els.card.classList.remove("visible");
-  setStatus("Searching...");
+  setStatus("Checking the sheet...");
 
   try {
     const url = `${PROXY_URL}/?t=${encodeURIComponent(title)}`;
@@ -224,38 +378,40 @@ async function searchMovie() {
     const data = await res.json();
 
     if (data.Response === "False") {
-      setStatus(data.Error || "Movie not found.", true);
+      setStatus(data.Error || "No entry found for that title.", true);
       return;
     }
 
     setStatus("");
     els.title.textContent = `${data.Title} (${data.Year})`;
-    els.meta.textContent = [data.Rated, data.Runtime, data.Genre].filter(Boolean).join(" • ");
+    els.meta.textContent = [data.Rated, data.Runtime, data.Genre].filter(Boolean).join(" / ");
     els.poster.src = (data.Poster && data.Poster !== "N/A") ? data.Poster : "";
     els.poster.alt = data.Title;
-    els.plot.textContent = data.Plot && data.Plot !== "N/A" ? data.Plot : "No synopsis available.";
+    els.plot.textContent = data.Plot && data.Plot !== "N/A" ? data.Plot : "No synopsis on file.";
     els.actors.textContent = data.Actors && data.Actors !== "N/A" ? data.Actors : "Not listed.";
     els.director.textContent = data.Director && data.Director !== "N/A" ? data.Director : "Not listed.";
 
     els.scores.innerHTML = "";
     const ratings = data.Ratings || [];
     ratings.forEach(r => {
-      const pill = document.createElement("div");
-      pill.className = "score-pill" + (r.Source === "Rotten Tomatoes" ? " rt" : "");
-      const cls = r.Source === "Rotten Tomatoes" ? ratingClass(r.Value) : "";
-      pill.innerHTML = `<span>${r.Source}</span><span class="val ${cls}">${r.Value}</span>`;
-      els.scores.appendChild(pill);
+      const isRT = r.Source === "Rotten Tomatoes";
+      const cls = isRT ? ratingClass(r.Value) : "neutral";
+      const chip = document.createElement("div");
+      chip.className = "flag-chip " + cls;
+      const label = isRT ? flagLabel(r.Source, cls) : r.Source;
+      chip.innerHTML = `<span class="swatch"></span><span class="src">${label}</span><span class="val">${r.Value}</span>`;
+      els.scores.appendChild(chip);
     });
     if (data.Metascore && data.Metascore !== "N/A" && !ratings.some(r => r.Source === "Metacritic")) {
-      const pill = document.createElement("div");
-      pill.className = "score-pill";
-      pill.innerHTML = `<span>Metascore</span><span class="val">${data.Metascore}</span>`;
-      els.scores.appendChild(pill);
+      const chip = document.createElement("div");
+      chip.className = "flag-chip neutral";
+      chip.innerHTML = `<span class="swatch"></span><span class="src">Metascore</span><span class="val">${data.Metascore}</span>`;
+      els.scores.appendChild(chip);
     }
 
     els.card.classList.add("visible");
   } catch (err) {
-    setStatus("Something went wrong. Check your connection and try again.", true);
+    setStatus("Couldn't reach the pit wall. Check your connection and try again.", true);
   }
 }
 
@@ -263,7 +419,6 @@ els.searchBtn.addEventListener("click", searchMovie);
 els.query.addEventListener("keydown", (e) => {
   if (e.key === "Enter") searchMovie();
 });
-
 </script>
 
 </body>
