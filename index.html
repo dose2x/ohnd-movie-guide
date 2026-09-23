@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The OHND Movie Guide</title>
+<meta name="description" content="Look up any movie or show before movie night: Rotten Tomatoes flag, synopsis, director and cast.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' https://m.media-amazon.com; connect-src https://ohnd-movie-proxy.ohndtomatometer.workers.dev; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="icon" href="logo.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -177,6 +180,8 @@
     position: relative;
     transform: rotate(-2deg);
   }
+  .poster-wrap:has(img.poster[hidden]) { display: none; }
+  .sheet-inner:has(img.poster[hidden]) { grid-template-columns: 1fr; }
   .poster-wrap img.poster {
     width: 100%;
     display: block;
@@ -284,9 +289,9 @@
 <div class="checker"></div>
 
 <header>
-  <img class="badge-logo" id="logo" src="logo.jpg" alt="OHND logo" onerror="this.classList.add('hidden')">
+  <img class="badge-logo" id="logo" src="logo.jpg" alt="OHND logo">
   <h1><span class="small-word">Our House No Drama presents</span>The Movie Guide</h1>
-  <p class="tagline">Pull the sheet on any title before movie night â flag status, synopsis and who's driving.</p>
+  <p class="tagline">Pull the sheet on any title before movie night — flag status, synopsis and who's driving.</p>
 </header>
 
 <div class="checker"></div>
@@ -294,15 +299,15 @@
 <div class="container">
   <p class="pit-label">Pull a sheet</p>
   <div class="search-row">
-    <input type="text" id="query" placeholder="Type a title, e.g. The Matrix" autocomplete="off">
+    <input type="text" id="query" aria-label="Movie or show title" placeholder="Type a title, e.g. The Matrix" autocomplete="off">
     <button id="searchBtn">Search</button>
   </div>
-  <div id="status"></div>
+  <div id="status" role="status" aria-live="polite"></div>
 
   <div class="sheet" id="card">
     <div class="sheet-inner">
       <div class="poster-wrap">
-        <img class="poster" id="poster" src="" alt="Poster">
+        <img class="poster" id="poster" alt="" hidden>
       </div>
       <div class="info">
         <h2 id="title"></h2>
@@ -329,97 +334,7 @@
   </div>
 </div>
 
-<script>
-const PROXY_URL = "https://ohnd-movie-proxy.ohndtomatometer.workers.dev";
-
-const els = {
-  query: document.getElementById("query"),
-  searchBtn: document.getElementById("searchBtn"),
-  status: document.getElementById("status"),
-  card: document.getElementById("card"),
-  poster: document.getElementById("poster"),
-  title: document.getElementById("title"),
-  meta: document.getElementById("meta"),
-  scores: document.getElementById("scores"),
-  plot: document.getElementById("plot"),
-  actors: document.getElementById("actors"),
-  director: document.getElementById("director"),
-};
-
-function setStatus(msg, isError) {
-  els.status.textContent = msg || "";
-  els.status.classList.toggle("error", !!isError);
-}
-
-function ratingClass(value) {
-  const num = parseInt(value, 10);
-  if (isNaN(num)) return "";
-  return num >= 60 ? "fresh" : "rotten";
-}
-
-function flagLabel(source, cls) {
-  if (cls === "fresh") return "Green flag";
-  if (cls === "rotten") return "Red flag";
-  return source;
-}
-
-async function searchMovie() {
-  const title = els.query.value.trim();
-  if (!title) {
-    setStatus("Type a title first.", true);
-    return;
-  }
-  els.card.classList.remove("visible");
-  setStatus("Checking the sheet...");
-
-  try {
-    const url = `${PROXY_URL}/?t=${encodeURIComponent(title)}`;
-    const res = await fetch(url);
-    const data = await res.json();
-
-    if (data.Response === "False") {
-      setStatus(data.Error || "No entry found for that title.", true);
-      return;
-    }
-
-    setStatus("");
-    els.title.textContent = `${data.Title} (${data.Year})`;
-    els.meta.textContent = [data.Rated, data.Runtime, data.Genre].filter(Boolean).join(" / ");
-    els.poster.src = (data.Poster && data.Poster !== "N/A") ? data.Poster : "";
-    els.poster.alt = data.Title;
-    els.plot.textContent = data.Plot && data.Plot !== "N/A" ? data.Plot : "No synopsis on file.";
-    els.actors.textContent = data.Actors && data.Actors !== "N/A" ? data.Actors : "Not listed.";
-    els.director.textContent = data.Director && data.Director !== "N/A" ? data.Director : "Not listed.";
-
-    els.scores.innerHTML = "";
-    const ratings = data.Ratings || [];
-    ratings.forEach(r => {
-      const isRT = r.Source === "Rotten Tomatoes";
-      const cls = isRT ? ratingClass(r.Value) : "neutral";
-      const chip = document.createElement("div");
-      chip.className = "flag-chip " + cls;
-      const label = isRT ? flagLabel(r.Source, cls) : r.Source;
-      chip.innerHTML = `<span class="swatch"></span><span class="src">${label}</span><span class="val">${r.Value}</span>`;
-      els.scores.appendChild(chip);
-    });
-    if (data.Metascore && data.Metascore !== "N/A" && !ratings.some(r => r.Source === "Metacritic")) {
-      const chip = document.createElement("div");
-      chip.className = "flag-chip neutral";
-      chip.innerHTML = `<span class="swatch"></span><span class="src">Metascore</span><span class="val">${data.Metascore}</span>`;
-      els.scores.appendChild(chip);
-    }
-
-    els.card.classList.add("visible");
-  } catch (err) {
-    setStatus("Couldn't reach the pit wall. Check your connection and try again.", true);
-  }
-}
-
-els.searchBtn.addEventListener("click", searchMovie);
-els.query.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") searchMovie();
-});
-</script>
+<script src="app.js"></script>
 
 </body>
 </html>
