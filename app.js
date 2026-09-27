@@ -15,6 +15,11 @@ const els = {
   director: document.getElementById("director"),
 };
 
+if (!Object.values(els).every(Boolean)) {
+  console.error("Required DOM elements missing");
+  document.body.textContent = "Error: Page failed to load. Try refreshing.";
+}
+
 function setStatus(msg, isError) {
   els.status.textContent = msg || "";
   els.status.classList.toggle("error", !!isError);
